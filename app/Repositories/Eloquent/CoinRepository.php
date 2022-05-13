@@ -19,8 +19,8 @@ class CoinRepository extends BaseRepository implements CoinInterface
     public function getCoin($coin_id)
     {
         $query = $this->newQuery();
-        $query->find($coin_id);
-        return $query->select(['id', 'coin_id', 'coin_symbol', 'coin_name', 'coin_from_date', 'coin_to_date', 'coin_price']);
+        $query->where('coin_id', $coin_id);
+        return $query->select(['id', 'coin_id', 'coin_symbol', 'coin_name', 'coin_from_date', 'coin_to_date', 'coin_price'])->first();
     }
 
     /**
