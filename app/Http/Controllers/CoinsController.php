@@ -2,10 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\CoinService;
+use Illuminate\Http\Request;
+
 class CoinsController extends Controller
 {
-    public function get()
+
+    protected $coinService;
+
+    public function __construct(CoinService $coinService)
     {
-        return 'ok';
+        $this->coinService = $coinService;
+    }
+
+    public function getCoinPriceNow(Request $request)
+    {
+        return  $this->coinService->getPriceCoinNow($request);
+    }
+
+    public function getEstimatedCoinPrice(Request $request)
+    {
+        return $this->coinService->getEstimatedCoinPrice($request);
     }
 }

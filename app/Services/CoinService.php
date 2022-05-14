@@ -1,61 +1,85 @@
 <?php
 
 namespace App\Services;
+
+use App\Repositories\Eloquent\CoinRepository;
 use Codenixsv\CoinGeckoApi\CoinGeckoClient;
+use GuzzleHttp\Exception\ClientException;
 
 class CoinService
 {
-    public function getPriceCoin()
+    private $client;
+
+    public function __construct(CoinRepository $coinRepository)
     {
-        /**
-         * accepted formats:
-         * 'now'
-         * '2022-05-13' or '2022-05-13 09:45:45'
-         * '12 May 2022' or '12 May 2022 09:45:45'
-         */
-        $fromString = '12 May 2022 09:15:45';
-        $toString = '2022-05-13 00:00:00';
-
-        $fromUnix = strtotime($fromString);
-        $toUnix = strtotime($toString);
-
-        $client = new CoinGeckoClient();
-        // $data = $client->simple()->getPrice('0x,bitcoin', 'usd,rub'); // get by currency
-        // $data = $client->simple()->getSupportedVsCurrencies(); // get suported currency
-        $data = $client->coins()->getList(); //
-        // $data = $result = $client->coins()->getMarkets('btc');
-        // $result = $client->coins()->getCoin('bitcoin', ['tickers' => 'false', 'market_data' => 'false']);
-        // $result = $client->coins()->getTickers('bitcoin');
-        // $result = $client->coins()->getHistory('bitcoin', '30-12-2017'); // get bay date
-        // $result = $client->coins()->getMarketChart('bitcoin', 'usd', 'max');
-        $result = $client->coins()->getMarketChartRange('bitcoin', 'usd', $fromUnix, $toUnix); // id: bitcoin, vs_currency: usd,
-        return response()->json($data);
+        $this->coinRepository = $coinRepository;
+        $this->client =  new CoinGeckoClient();
     }
 
-    public function getPriceCoinFromTo()
+    public function getPriceCoinNow($payload)
     {
-        /**
-         * accepted formats:
-         * 'now'
-         * '2022-05-13' or '2022-05-13 09:45:45'
-         * '12 May 2022' or '12 May 2022 09:45:45'
-         */
-        $fromString = '12 May 2022 09:15:45';
-        $toString = '2022-05-13 00:00:00';
+        try {
 
-        $fromUnix = strtotime($fromString);
-        $toUnix = strtotime($toString);
+            $coinPrice = $this->client->simple()
+                ->getPrice($payload->coin_id, $payload->vs_currency);
 
-        $client = new CoinGeckoClient();
-        // $data = $client->simple()->getPrice('0x,bitcoin', 'usd,rub'); // get by currency
-        // $data = $client->simple()->getSupportedVsCurrencies(); // get suported currency
-        $data = $client->coins()->getList(); //
-        // $data = $result = $client->coins()->getMarkets('btc');
-        // $result = $client->coins()->getCoin('bitcoin', ['tickers' => 'false', 'market_data' => 'false']);
-        // $result = $client->coins()->getTickers('bitcoin');
-        // $result = $client->coins()->getHistory('bitcoin', '30-12-2017'); // get bay date
-        // $result = $client->coins()->getMarketChart('bitcoin', 'usd', 'max');
-        $result = $client->coins()->getMarketChartRange('bitcoin', 'usd', $fromUnix, $toUnix); // id: bitcoin, vs_currency: usd,
-        return response()->json($data);
+            $coinData = $this->client->coins()->getCoin($payload->coin_id, [
+                'tickers' => false,
+                'market_data' => false,
+            ]);
+
+            if(count($coinPrice[$payload->coin_id]) !== 1) {
+                return response()->json([
+                    'message' => 'Please choose ONE valid currency!'
+                ], 404);
+            }
+
+            $requestPayload = [
+                'coin_id' => $coinData['id'],
+                'coin_symbol' => $coinData['symbol'],
+                'coin_name'  => $coinData['name'],
+                'price'  => $coinPrice[$payload->coin_id][$payload->vs_currency],
+            ];
+
+            $this->coinRepository->createCoin($requestPayload);
+
+        }catch (ClientException $clientErr) {
+            return response()->json(($clientErr->getMessage()), $clientErr->getCode());
+        } catch (\PDOException $err) {
+            return response()->json($err);
+        }
+
+        return response()->json($coinPrice);
+    }
+
+    public function getEstimatedCoinPrice($payload)
+    {
+        try {
+
+            $result = $this->client->coins()
+                        ->getHistory($payload->coin_id, $payload->date);
+
+        } catch (ClientException $clientErr) {
+            if(strpos($clientErr->getMessage(), 'invalid date') !== false){
+                return response()->json([
+                    'message' => 'Invalid date formate. Expected format: dd-mm-yyyy',
+                ], $clientErr->getCode());
+            } else if(strpos($clientErr->getMessage(), 'not find coin') !== false) {
+                return response()->json([
+                    'message' => 'Could not find coin price for given coin_id',
+                ], $clientErr->getCode());
+            }
+        }
+
+        if($payload->vs_currency) {
+            return response()->json(
+                [
+                    $payload->vs_currency =>
+                    $result['market_data']['current_price'][$payload->vs_currency]
+                ]
+            );
+        }
+
+        return response()->json($result['market_data']['current_price']);
     }
 }

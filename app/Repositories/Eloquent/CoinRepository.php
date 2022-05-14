@@ -4,28 +4,31 @@ namespace App\Repositories\Eloquent;
 
 use App\Models\Coin;
 use App\Repositories\Contracts\CoinInterface;
+use App\Repositories\Eloquent\BaseRepository;
 
 class CoinRepository extends BaseRepository implements CoinInterface
 {
 
     /**
-     * Set User Model
-     *
-     * @var $modelClass
+     * Set Coin Model
+     * @var $model
      */
-    protected $modelClass = Coin::class;
+    protected $model = Coin::class;
 
 
     public function getCoin($coin_id)
     {
         $query = $this->newQuery();
-        $query->where('coin_id', $coin_id);
-        return $query->select(['id', 'coin_id', 'coin_symbol', 'coin_name', 'coin_from_date', 'coin_to_date', 'coin_price'])->first();
+        return $query->select([
+            'id', 'coin_id', 'coin_symbol', 'coin_name', 'coin_price'
+        ])
+            ->where('coin_id', $coin_id)
+            ->order_by('created_at', 'desc')
+            ->first();
     }
 
     /**
-     * Service Create User
-     *
+     * Service Create Coin
      * @param array $payload
      * @return Builder
      */

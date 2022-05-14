@@ -2,17 +2,19 @@
 
 namespace App\Repositories\Eloquent;
 
-use App\Models\Coin;
+use Illuminate\Database\Eloquent\Builder as EloquentQueryBuilder;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Database\Query\Builder as QueryBuilder;
+use Illuminate\Pagination\AbstractPaginator as Paginator;
 
 abstract class BaseRepository
 {
-
+    /**
+     * Model class for repo.
+     *
+     * @var string
+     */
     protected $model;
-
-    public function __construct()
-    {
-        $this->model = app(Coin::class);
-    }
 
     /**
      * @return EloquentQueryBuilder|QueryBuilder
@@ -29,7 +31,6 @@ abstract class BaseRepository
      *
      * @return EloquentCollection|Paginator
      */
-
     protected function doQuery($query = null, $take = 10, $paginate = true)
     {
         if (is_null($query)) {
