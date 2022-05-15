@@ -15,5 +15,5 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/coin', [CoinsController::class, 'getCoinPriceNow']);
+Route::post('/coin', [CoinsController::class, 'getBtcPriceNow']);
 Route::post('/coin/estimated-price', [CoinsController::class, 'getEstimatedCoinPrice']);
