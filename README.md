@@ -53,14 +53,14 @@ Response:
 
 #### `POST /api/coin/estimated-price`
 
-```json
-body request: 
-{
-    coin_id(optional): a coin id (possible values: bitcoin, ethereum, dacxi, ...)
-    datetime:(required): one valid date with format yyyy-mm-dd HH:ii
-    vs_currency(optional): a currency for compare coin price (possible values: usd, aud, brl, ...)
-}
-```
+
+    body request 
+    {
+        coin_id(optional): a coin id (possible values: bitcoin, ethereum, dacxi, ...)
+        datetime:(required): one valid date with format yyyy-mm-dd HH:ii
+        vs_currency(optional): a currency for compare coin price (possible values: usd, aud, brl, ...)
+    }
+
 
 If the ***coin_id*** and ***vs_currency*** parameters are not passed, the response will be the bitcoin price for the required ***date***.
 
