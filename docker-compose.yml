@@ -7,6 +7,9 @@ services:
             context: .
             dockerfile: Dockerfile
         image: cloudsigma.com/php
+        depends_on:
+            - db
+            - webserver
         container_name: app
         restart: unless-stopped
         tty: true
@@ -16,6 +19,7 @@ services:
         working_dir: /var/www/html/
         volumes:
             - ./:/var/www/html/
+            - ./docker-compose/php/laravel.ini:/usr/local/etc/php/conf.d/laravel.ini
         networks:
             - app-network
 

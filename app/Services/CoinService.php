@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Repositories\Eloquent\CoinRepository;
 use Codenixsv\CoinGeckoApi\CoinGeckoClient;
 use GuzzleHttp\Exception\ClientException;
+use Illuminate\Support\Facades\Validator;
+use \Datetime;
 
 class CoinService
 {
@@ -21,9 +23,10 @@ class CoinService
         try {
 
             $coin_id =  $payload->coin_id ? $payload->coin_id : 'bitcoin';
+            $vs_currency = $payload->vs_currency ? $payload->vs_currency : 'usd';
 
             $coinPrice = $this->clientCoinGeckoApi->simple()
-                ->getPrice($coin_id, $payload->vs_currency);
+                ->getPrice($coin_id, $vs_currency);
 
             $coinData = $this->clientCoinGeckoApi->coins()->getCoin($coin_id, [
                 'tickers' => false,
@@ -40,7 +43,7 @@ class CoinService
                 'coin_id' => 'bitcoin',
                 'coin_symbol' => $coinData['symbol'],
                 'coin_name'  => $coinData['name'],
-                'price'  => $coinPrice[$coin_id][$payload->vs_currency],
+                'price'  => $coinPrice[$coin_id][$vs_currency],
             ];
 
             $this->coinRepository->create($requestPayload);
@@ -56,12 +59,45 @@ class CoinService
 
     public function getEstimatedCoinPriceByDate($payload)
     {
-        try {
+        $validator = Validator::make($payload->all(),[
+            'datetime' => 'required',
+        ]);
 
+        if($validator->fails()) {
+            return response()->json([
+                'error' => [
+                    'message' => 'Please verify the field(s) values',
+                    'fields' => $validator->errors()->getMessages()
+                ]
+            ]);
+        }
+
+        $vs_currency = $payload->vs_currency ? $payload->vs_currency : 'usd';
+
+        $now = date('Y-m-d H:i');
+        $from = strtotime($payload->datetime);
+        $to = strtotime($now);
+
+        if($from > $to) {
+            return response()->json([
+                'error' => [
+                    'message' => 'The date and time must be less than the current date and time'
+                ]
+            ], 400);
+        }
+
+        try {
             $coin_id =  $payload->coin_id ? $payload->coin_id : 'bitcoin';
 
-            $result = $this->clientCoinGeckoApi->coins()
-                        ->getHistory($coin_id, $payload->date);
+            $result = $this->clientCoinGeckoApi->coins()->getMarketChartRange(
+                $coin_id,
+                $vs_currency,
+                $from,
+                $to
+            );
+
+            $closestDate = $this->find_closest($result['prices'], $payload->datetime, $vs_currency);
+
 
         } catch (ClientException $clientErr) {
             if(strpos($clientErr->getMessage(), 'invalid date') !== false){
@@ -75,29 +111,28 @@ class CoinService
             }
         }
 
-        if($payload->vs_currency) {
-            return response()->json(
-                [
-                    $result['symbol'] . '/' .$payload->vs_currency =>
-                    number_format(
-                        $result['market_data']['current_price'][$payload->vs_currency], 2, '.', ''
-                    )
-                ]
-            );
+        return response()->json($closestDate);
+    }
+
+    public function find_closest($array, $findDate, $vs_currency)
+    {
+        $msDates = array();
+
+        foreach($array as $index => $date)
+        {
+            $msDates[] = $date[0];
+
+            foreach ($msDates as $a)
+            {
+                if ($a >= strtotime($findDate)){
+                    $estimated = [
+                        'datetime' => date('Y-m-d H:i', $array[$index][0] / 1000),
+                        $vs_currency => number_format($array[$index][1], 2, '.', '')
+                    ];
+                    return $estimated;
+                }
+
+            }
         }
-
-        $allParities = [];
-
-        foreach($result['market_data']['current_price'] as $key => $value) {
-            array_push($allParities, [
-                $result['symbol'] . '/' . $key =>
-                number_format(
-                    $value, 2, '.', ''
-                )
-            ]);
-        }
-
-
-        return response()->json($allParities);
     }
 }
