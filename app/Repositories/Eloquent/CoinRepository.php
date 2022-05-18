@@ -6,19 +6,23 @@ use App\Models\Coin;
 use App\Repositories\Contracts\CoinInterface;
 use App\Repositories\Eloquent\BaseRepository;
 
-class CoinRepository extends BaseRepository implements CoinInterface
+class CoinRepository implements CoinInterface
 {
 
     /**
      * Set Coin Model
-     * @var $model
+     * @var Model $model
      */
     protected $model = Coin::class;
+
+    public function __construct(BaseRepository $repository){
+        $this->repository = $repository;
+    }
 
 
     public function getCoinPrice($coin_id)
     {
-        $query = $this->newQuery();
+        $query =  $this->repository->newQuery();
         return $query->select([
             'id', 'coin_id', 'coin_symbol', 'coin_name', 'coin_price'
         ])
@@ -34,7 +38,7 @@ class CoinRepository extends BaseRepository implements CoinInterface
      */
     public function create($payload)
     {
-        $query = $this->newQuery();
+        $query =$this->repository->newQuery();
         return $query->create($payload);
     }
 }
