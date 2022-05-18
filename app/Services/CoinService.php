@@ -16,7 +16,7 @@ class CoinService
         $this->clientCoinGeckoApi =  new CoinGeckoClient();
     }
 
-    public function getBtcPriceNow($payload)
+    public function getCoinPriceNow($payload)
     {
         try {
 
@@ -54,7 +54,7 @@ class CoinService
         return response()->json($coinPrice);
     }
 
-    public function getEstimatedCoinPrice($payload)
+    public function getEstimatedCoinPriceByDate($payload)
     {
         try {
 

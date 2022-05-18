@@ -4,7 +4,7 @@ namespace App\Repositories\Contracts;
 
 interface CoinInterface
 {
-    public function getBtc($payload);
+    public function getCoinPrice($payload);
 
-    public function createCoin($payload);
+    public function create($payload);
 }

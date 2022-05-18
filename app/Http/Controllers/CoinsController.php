@@ -15,14 +15,14 @@ class CoinsController extends Controller
         $this->coinService = $coinService;
     }
 
-    public function getBtcPriceNow(Request $request)
+    public function getCoinPriceNow(Request $request)
     {
-        return  $this->coinService->getBtcPriceNow($request);
+        return  $this->coinService->getCoinPriceNow($request, );
     }
 
-    public function getEstimatedCoinPrice(Request $request)
+    public function getEstimatedCoinPriceByDate(Request $request)
     {
-        return $this->coinService->getEstimatedCoinPrice($request);
+        return $this->coinService->getEstimatedCoinPriceByDate($request);
     }
 
     public function getManyCoins(Request $request) {

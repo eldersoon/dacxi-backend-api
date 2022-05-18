@@ -16,7 +16,7 @@ class CoinRepository extends BaseRepository implements CoinInterface
     protected $model = Coin::class;
 
 
-    public function getBtc($coin_id)
+    public function getCoinPrice($coin_id)
     {
         $query = $this->newQuery();
         return $query->select([
@@ -32,7 +32,7 @@ class CoinRepository extends BaseRepository implements CoinInterface
      * @param array $payload
      * @return Builder
      */
-    public function createCoin($payload)
+    public function create($payload)
     {
         $query = $this->newQuery();
         return $query->create($payload);
