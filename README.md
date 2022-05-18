@@ -57,11 +57,11 @@ Response:
     body request: 
     {
        coin_id(optional): a coin id (possible values: bitcoin, ethereum, dacxi, ...)
-       date:(required): one valid date with format dd-mm-yyyy 
+       date:(required): one valid date with format yyyy-mm-dd HH:ii
        vs_currency(optional): a currency for compare coin price (possible values: usd, aud, brl, ...)
     }
 
-If ***coin_id*** and ***vs_currency*** params wasn't passed, response will be all possible parities of bitcoin for required ***date***.
+If ***coin_id*** and ***vs_currency*** params wasn't passed, response will be bitcoin price for required ***date***.
 
 #### Example:
 Request:
