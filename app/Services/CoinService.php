@@ -43,7 +43,7 @@ class CoinService
                 'price'  => $coinPrice[$coin_id][$payload->vs_currency],
             ];
 
-            $this->coinRepository->createCoin($requestPayload);
+            $this->coinRepository->create($requestPayload);
 
         }catch (ClientException $clientErr) {
             return response()->json(($clientErr->getMessage()), $clientErr->getCode());
