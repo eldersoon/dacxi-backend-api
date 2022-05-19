@@ -10,7 +10,7 @@
 #### Architecture
 - Service layer pattern - at \App\Services
 - Repository pattern - at \App\Repositories
-Note:
+##### Note:
     These design patterns were chosen respectively to reduce the impacts of the change if there is a need for a change in the business rule (Service layer), and to centralize the code that makes the data persistence and avoids duplicate codes, as well as other advantages (Repository).
 
 ## Run application in docker environment:
