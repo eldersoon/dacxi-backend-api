@@ -97,3 +97,6 @@ Response:
 	}
 }
 ```
+
+### Try yourself:
+`https://dacxi-api.herokuapp.com/api/`
