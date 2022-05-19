@@ -46,9 +46,11 @@ Request:
 ```
 Response:
 ```json
-"bitcoin": {
+{
+    "bitcoin": {
 		"usd": 29191
 	}
+}
 ```
 
 #### `POST /api/coin/estimated-price`
