@@ -13,7 +13,8 @@
 ##### Note:
 These design patterns were chosen respectively to reduce the impacts of the change if there is a need for a change in the business rule (Service layer), and to centralize the code that makes the data persistence and avoids duplicate codes, as well as other advantages (Repository).
 
-### Local environment
+## Local environment
+
 If you prefer to run the application in your local environment, make sure that all required settings are met and follow the steps below:
 
 * to install all dependencies run `composer install`
