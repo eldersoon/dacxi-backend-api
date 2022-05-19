@@ -31,7 +31,7 @@ If you prefer to run the application in your local environment, make sure that a
 
     body request
     {
-       coin_id(optional): a coin id (possible values: bitcoin, ethereum, dacxi, ...)
+       coin_id(optional): a coin id (possible values: bitcoin, ethereum, dacxi, cosmos(ATOM), terra-luna(LUNA))
        vs_currency(optional): a currency for compare coin price (possible values: usd, aud, brl, ...)
     }
 
@@ -56,7 +56,7 @@ Response:
 
     body request 
     {
-        coin_id(optional): a coin id (possible values: bitcoin, ethereum, dacxi, ...)
+        coin_id(optional): a coin id (possible values: bitcoin, ethereum, dacxi, cosmos(ATOM), terra-luna(LUNA))
         datetime:(required): one valid date with format yyyy-mm-dd HH:ii
         vs_currency(optional): a currency for compare coin price (possible values: usd, aud, brl, ...)
     }
@@ -76,7 +76,9 @@ Request:
 Response:
 ```json
 {
-	"datetime": "2022-05-18 12:44",
-	"usd": "29849.22"
+	"bitcoin": {
+		"datetime": "2022-05-18 12:44",
+		"usd": "29849.22"
+	}
 }
 ```
