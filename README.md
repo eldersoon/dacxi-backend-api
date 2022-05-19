@@ -8,12 +8,14 @@
 -  [CoinGecko API](https://github.com/codenix-sv/coingecko-api)
 
 ## Run application in docker environment:
-- to install all dependencies run `composer install`
-- run `cp .env.example .env` (Don't need setting database credentials)
-- run `php artisan key:generate`
-- now you should create coin table running `php artisan migrate`
+
 - run `docker-compose build app`
 - run `docker-compose up -d` to start application in docker.
+- open the application bash `docker-compose exec app bash`
+- to install all dependencies run `composer install`
+- run `cp .env.example .env` (Don't need setting database credentials)
+- run `php artisan key:generate` (PS: maybe the application show a Permission Error after create .env file. To avoid and fix it, run `php artisan storage:link` and after `chmod o+w ./storage/ -R`)
+- now you should create coin table running `php artisan migrate`
 
 Now you can see application running on `http://localhost` .
 
