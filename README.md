@@ -33,6 +33,7 @@ If you prefer to run the application in your local environment, make sure that a
 
 #### To return current crypto currency price:
 #### `POST /api/coin`
+This endpoint returns the current price of some currency. By default it will returns bitcoin price, and register this value and others informations about the coin, like name, symbol, and id in database.
 
     body request
     {
@@ -59,7 +60,7 @@ Response:
 ```
 
 #### `POST /api/coin/estimated-price`
-
+This endpoint return the coin price in a specific  date an time. The price returned is the estimated coin price in closest date and time passed in request. See request example below.
 
     body request 
     {
