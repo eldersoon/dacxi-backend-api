@@ -7,6 +7,12 @@
 #### Lib:
 -  [CoinGecko API](https://github.com/codenix-sv/coingecko-api)
 
+#### Architecture
+- Service layer pattern - at \App\Services
+- Repository pattern - at \App\Repositories
+Note:
+```These design patterns were chosen respectively to reduce the impacts of the change if there is a need for a change in the business rule (Service layer), and to centralize the code that makes the data persistence and avoids duplicate codes, as well as other advantages (Repository).
+```
 ## Run application in docker environment:
 
 - run `docker-compose build app`
@@ -60,7 +66,7 @@ Response:
 ```
 
 #### `POST /api/coin/estimated-price`
-This endpoint return the coin price in a specific  date an time. The price returned is the estimated coin price in closest date and time passed in request. See request example below.
+This endpoint returns the coin price in a specific  date an time. The price returned is the estimated coin price in closest date and time passed in request. See request example below.
 
     body request 
     {
